@@ -11,8 +11,10 @@ getTexts = (editor) ->
 
     texts = for sel in editor.getSelections()
       do (sel) ->
-        sel.selectLine(sel.getBufferRowRange()[0])
-        sel.selectLine(sel.getBufferRowRange()[1])
+        rng = sel.getBufferRowRange()
+        sel.selectLine(rng[0])
+        if rng[1] - rng[0] > 0
+          sel.selectDown(rng[1] - rng[0])
         return sel.getText()
 
     return texts
@@ -32,7 +34,7 @@ module.exports =
     atom.commands.add 'atom-workspace', "fast-duplicate:duplicate-down", => @down()
     atom.commands.add 'atom-workspace', "fast-duplicate:duplicate-up", => @up()
   down: ->
-    editor = atom.workspace.activePaneItem
+    editor = atom.workspace.getActivePaneItem()
     editor.duplicateLines()
     # cursors = getCursors(editor)
     # texts = getTexts(editor)
@@ -46,7 +48,7 @@ module.exports =
     #     sel.insertText(texts[i])
 
   up: ->
-    editor = atom.workspace.activePaneItem
+    editor = atom.workspace.getActivePaneItem()
     cursors = getCursors(editor)
     texts = getTexts(editor)
 
